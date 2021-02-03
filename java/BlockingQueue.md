@@ -21,4 +21,8 @@ offer(E e, long timeout, TimeUnit unit)：在队尾插入一个元素,，如果�
 - AtomicInteger的一个count实现计数
 
 ### ArrayBlockingQueue
-- 
+- 使用一把锁,
+
+### DelayQueue 
+并发安全的延时队列，每个元素都有过期时间，只有过期元素才会出队列，队列中的元素是按过期时间排序的
+
