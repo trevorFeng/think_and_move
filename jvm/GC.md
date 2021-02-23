@@ -65,25 +65,13 @@
         - XX:+ UseCMSCompactAtFullCollection Full GC后，进行一次碎片整理；整理过程是独占的，会引起停顿时间变长
         - XX:+CMSFullGCsBeforeCompaction  设置进行几次Full GC后，进行一次碎片整理
         - XX:ParallelCMSThreads  设定CMS的线程数量（一般情况约等于可用CPU数量）
-    - G1  
-     1. 空间整合，G1收集器采用标记整理算法，不会产生内存空间碎片。分配大对象时不会因为无法找到连续空间而提前触发下一次GC
-     2. 可预测停顿，这是G1的另一大优势，降低停顿时间是G1和CMS的共同关注点，但G1除了追求低停顿外，还能建立可预测的停顿时间模型，能让使用者明确指定在一个长度为N毫秒的时间片段内，消耗在垃圾收集上的时间不得超过N毫秒，这几乎已经是实时Java（RTSJ）的垃圾收集器的特征了
-     3. 使用G1收集器时，Java堆的内存布局与其他收集器有很大差别，它将整个Java堆划分为多个大小相等的独立区域（Region），虽然还保留有新生代和老年代的概念，但新生代和老年代不再是物理隔阂了，它们都是一部分（可以不连续）Region的集合
-     4. G1的新生代收集跟ParNew类似，当新生代占用达到一定比例的时候，开始出发收集。和CMS类似，G1收集器收集老年代对象会有短暂停顿。
-        - 收集步骤
-            - 标记阶段，首先初始标记(Initial-Mark),这个阶段是停顿的(Stop the World Event)，并且会触发一次普通Mintor GC。
-            - Root Region Scanning，程序运行过程中会回收survivor区(存活到老年代)，这一过程必须在young GC之前完成
-            - Concurrent Marking，在整个堆中进行并发标记(和应用程序并发执行)，此过程可能被young GC中断。在并发标记阶段，若发现区域对象中的所有对象都是垃圾，那个这个区域会被立即回收(图中打X)。同时，并发标记过程中，会计算每个区域的对象活性(区域中存活对象的比例)
-            - Remark, 再标记，会有短暂停顿(STW)。再标记阶段是用来收集 并发标记阶段 产生新的垃圾(并发阶段和应用程序一同运行)；G1中采用了比CMS更快的初始快照算法:snapshot-at-the-beginning (SATB)
-            - Copy/Clean up，多线程清除失活对象，会有STW。G1将回收区域的存活对象拷贝到新区域，清除Remember Sets，并发清空回收区域并把它返回到空闲区域链表中
-            - 复制/清除过程后。回收区域的活性对象已经被集中回收到深蓝色和深绿色区域
-            ```
-                -XX:+UnlockExperimentalVMOptions -XX:+UseG1GC        #开启
-                -XX:MaxGCPauseMillis =50                  #暂停时间目标
-                -XX:GCPauseIntervalMillis =200          #暂停间隔目标
-                -XX:+G1YoungGenSize=512m            #年轻代大小
-                -XX:SurvivorRatio=6                            #幸存区比例
-            ```
 
-### GC调优点
-- 
+### G1收集器
+通过自动调整堆空间大小，来控制GC频率 
+
+堆内存会被分配多个固定大小的区域，默认2048个，每个区域都被标记了E,S,O,H
+- eden区
+- survivor
+- 老年代
+- 巨型对象区
+
