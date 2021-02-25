@@ -6,6 +6,7 @@
 
 ### 扩展点
 ![](../a-imgs/bean生命周期.png)
+
 影响多个bean的接口
 - InstantiationAwareBeanPostProcessor  
 作用于bean实例化的前后
