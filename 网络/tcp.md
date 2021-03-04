@@ -12,6 +12,33 @@
 - server端发送完最后的数据后，发送连接关闭请求
 - client收到报文后，发送ACK给server端，然后等待2*MSL（最报文寿命），进入关闭状态
 
+
+![](../a-imgs/tcp1.png)
+
+```
+LISTEN：侦听来自远方的TCP端口的连接请求
+
+SYN-SENT：再发送连接请求后等待匹配的连接请求（客户端）
+
+SYN-RECEIVED：再收到和发送一个连接请求后等待对方对连接请求的确认（服务器）
+
+ESTABLISHED：代表一个打开的连接
+
+FIN-WAIT-1：等待远程TCP连接中断请求，或先前的连接中断请求的确认
+
+FIN-WAIT-2：从远程TCP等待连接中断请求
+
+CLOSE-WAIT：等待从本地用户发来的连接中断请求
+
+CLOSING：等待远程TCP对连接中断的确认
+
+LAST-ACK：等待原来的发向远程TCP的连接中断请求的确认
+
+TIME-WAIT：等待足够的时间以确保远程TCP接收到连接中断请求的确认
+
+CLOSED：没有任何连接状态
+```
+
 ### 为什么等待2*MSL才关闭
 - client必须确认server端收到了ACK
 - 假如最后一次client发送的FIN在网络中弄丢了
